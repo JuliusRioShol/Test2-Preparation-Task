@@ -1,0 +1,73 @@
+#!/bin/bash
+
+#-----------------------
+#1- Check argument Count
+#-----------------------
+if [ "$#" -ne 2 ]; then
+	echo "You need to provide two arguments for this script to work."
+	echo "Usage: make-go-dir <root directory name> <identifier name> "
+	exit 1
+fi
+
+ROOTDIR=$1
+IDENTIFIER=$2
+
+#---------------------------------------
+#2- We ask the user for confirmation now
+# --------------------------------------
+echo "I am about to creat a directory structure named '$ROOTDIR' And '$IDENTIFIER is the identifier for the go.mod file"
+read -p "Do you want me to continue? [Yes/no] " ANSWER
+
+if [ "$ANSWER" != "Yes" ]; then
+	echo "Abort"
+	exit 0
+fi
+
+#----------------------------------
+#3- We now create the directories
+#---------------------------------
+echo "Create directory structure...."
+
+mkdir -p "$ROOTDIR/bin"
+mkdir -p "$ROOTDIR/cmd/api"
+mkdir -p "$ROOTDIR/internals"
+mkdir -p "$ROOTDIR/migrations"
+mkdir -p "$ROOTDIR/remote"
+
+
+
+#-------------------------------------
+#4- We create the go.mod file now
+#-------------------------------------
+echo "module ${ROOTDIR}.${IDENTIFIER}" > "$ROOTDIR/go.mod"
+
+
+#-------------------------------------------------------------
+#5- We now create the make file now - should be empty as well
+#-------------------------------------------------------------
+touch "$ROOTDIR/make-file"
+
+
+#------------------------------------------
+#6 - Now write simple hellow world program
+#------------------------------------------
+cat <<EOF > "$ROOTDIR/cmd/api/main.go"
+//File: cmd/api/main.go
+
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello World!")
+}
+EOF
+
+
+
+#-----------------------------------------------------------
+# 7- Final message to user
+#-----------------------------------------------------------
+echo "I have created a *main.go* file for you to test the directory structure"
+echo "Type *go run ./cmd/api* at the root directory of your project to test your project"
+echo "Thank you. "
